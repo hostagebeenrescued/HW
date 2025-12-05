@@ -1,64 +1,48 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>1132941</title>
-  <style>
-    body {
-      font-family: "Noto Sans TC", sans-serif;
-      background: linear-gradient(135deg, #f0f4ff, #fff5f5);
-      text-align: center;
-      margin: 0;
-      padding: 50px;
-    }
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      display: inline-block;
-      padding: 40px 60px;
-    }
-    h1 {
-      margin: 0 0 10px;
-      color: #333;
-    }
-    .hw {
-      margin-top: 25px;
-      background: #f9fafb;
-      border-radius: 12px;
-      padding: 15px;
-      border: 1px solid #e2e8f0;
-    }
-    a {
-      display: inline-block;
-      margin: 6px;
-      padding: 8px 14px;
-      background: #3b82f6;
-      color: white;
-      border-radius: 6px;
-      text-decoration: none;
-    }
-  </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>XO 井字棋 — 網頁版</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a href="https://hostagebeenrescued.github.io/HW/" target="_blank">
-  <img src="螢幕擷取畫面 2025-11-08 221006.png">
-</a>
+<main class="container">
+  <h1>XO 井字棋</h1>
 
-  <div class="card">
-    <h1>學號：1132941</h1>
-    <p>這是我的個人頁面</p>
-
-    <div class="hw">
-      <h3>作業連結區</h3>
-      <a href="#">HW08</a>
-      <a href="#">HW09</a>
-      <a href="#">HW10</a>
-    </div>
+  <div class="status">
+    <span>目前輪到：<strong id="turn">X</strong></span>
+    <span id="state"></span>
   </div>
+
+  <!-- 計分板 -->
+  <div class="scoreboard">
+    <h2>計分板</h2>
+    <p>X 勝場：<span id="score-x">0</span></p>
+    <p>O 勝場：<span id="score-o">0</span></p>
+    <p>平手次數：<span id="score-draw">0</span></p>
+  </div>
+
+  <!-- 棋盤 -->
+  <section id="board" class="board" aria-label="井字棋棋盤">
+    <button class="cell" data-idx="0"></button>
+<button class="cell" data-idx="1"></button>
+<button class="cell" data-idx="2"></button>
+<button class="cell" data-idx="3"></button>
+<button class="cell" data-idx="4"></button>
+<button class="cell" data-idx="5"></button>
+<button class="cell" data-idx="6"></button>
+<button class="cell" data-idx="7"></button>
+<button class="cell" data-idx="8"></button>
+  </section>
+
+  <!-- 控制按鈕 -->
+  <div class="controls">
+    <button id="reset">重開一局</button>
+    <button id="reset-all">重置計分</button>
+  </div>
+</main>
+
+<script src="script.js" defer></script>
 </body>
 </html>
-
-
-
