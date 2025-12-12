@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>1132941 -HW09</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>OX 棋 - 1132941 - HW09</h1>
+      <p class="subtitle">玩家(X) 先手。電腦(O) 具備不可戰勝的智慧（Minimax + Alpha-Beta）</p>
+    </header>
+
+    <section class="controls">
+      <div class="left">
+        <div id="status">輪到玩家 (X)</div>
+        <div class="mode">
+          <label>難度：
+            <select id="aiMode">
+              <option value="unbeatable" selected>不可戰勝 (Minimax)</option>
+              <option value="smart">進階 (優先勝/阻擋/中心/角/叉)</option>
+              <option value="basic">基本 (勝/阻擋/隨機)</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="right">
+        <button id="resetBtn">重開一局</button>
+        
+      </div>
+    </section>
+
+    <section id="board" class="board" aria-label="Tic Tac Toe board"></section>
+
+    <section class="footer">
+      <div class="scores">
+        <span>你 (X)：<span id="scoreX">0</span></span>
+        <span>電腦 (O)：<span id="scoreO">0</span></span>
+        <span>平手：<span id="scoreT">0</span></span>
+      </div>
+     
+    </section>
+
+    <footer class="credits">
+     
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

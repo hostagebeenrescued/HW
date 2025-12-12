@@ -1,0 +1,99 @@
+:root{
+  --bg:#f6f8fa;
+  --card:#ffffff;
+  --accent:#0f62fe;
+  --muted:#666;
+  --success:#16a34a;
+  --danger:#dc2626;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: "Microsoft JhengHei", "Noto Sans TC", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 100%);
+  color:#222;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+
+.container{
+  width:100%;
+  max-width:720px;
+  background:var(--card);
+  border-radius:14px;
+  box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+  padding:20px;
+}
+
+header h1{
+  margin:0 0 6px 0;
+  font-size:20px;
+}
+.subtitle{margin:0;color:var(--muted);font-size:13px}
+
+.controls{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:14px 0;
+}
+.controls .left{display:flex;align-items:center;gap:12px}
+#status{font-weight:600}
+.mode select{padding:6px;border-radius:8px;border:1px solid #ddd}
+.controls .right button{
+  margin-left:8px;
+  padding:8px 12px;
+  border-radius:10px;
+  border: none;
+  background:var(--accent);
+  color:white;
+  cursor:pointer;
+  box-shadow: 0 6px 12px rgba(15,98,255,0.12);
+}
+.controls .right button:active{transform:translateY(1px)}
+
+.board{
+  width:100%;
+  max-width:420px;
+  aspect-ratio:1/1;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  padding:8px;
+}
+.cell{
+  background:linear-gradient(180deg,#fff,#fafafa);
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:46px;
+  font-weight:700;
+  cursor:pointer;
+  user-select:none;
+  box-shadow: 0 4px 8px rgba(2,6,23,0.06);
+  transition:transform .08s ease, background .15s;
+}
+.cell:hover{transform:scale(1.02)}
+.cell.disabled{cursor:not-allowed;opacity:0.78}
+.cell.x{color:#0f172a}
+.cell.o{color:#b91c1c}
+
+.win { outline: 4px solid rgba(16,185,129,0.14); box-shadow:0 8px 24px rgba(16,185,129,0.06) }
+
+.footer{margin-top:16px;display:flex;justify-content:space-between;align-items:center}
+.scores span{margin-right:12px;font-weight:600}
+.hint{color:var(--muted);font-size:13px;margin:0}
+
+.credits{margin-top:12px;text-align:right;color:var(--muted);font-size:12px}
+
+/* responsive */
+@media (max-width:520px){
+  .container{padding:12px}
+  .cell{font-size:34px}
+}
