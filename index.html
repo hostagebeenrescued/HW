@@ -1,0 +1,26 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>1132941 - HW10</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>1132941 - HW10 黑白棋</h1>
+
+  <div class="controls">
+    <label>電腦棋力：</label>
+    <select id="aiLevel">
+      <option value="basic">基本棋力</option>
+      <option value="advanced">進階棋力</option>
+    </select>
+    <button onclick="resetGame()">重新開始</button>
+  </div>
+
+  <div id="board"></div>
+  <p id="status"></p>
+
+  <script src="script.js"></script>
+</body>
+</html>
