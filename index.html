@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1132941 - FinalTerm</title>
+    <style>
+        :root {
+            --grid-size: 40px;
+            --stone-size: 34px;
+            --board-padding: 20px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background: radial-gradient(circle at top, #0d0d20, #1a1a3a);
+            color: #fff;
+        }
+
+        h1 {
+            text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+            margin-bottom: 15px;
+        }
+
+        .game-info {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 15px 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(6px);
+            margin-bottom: 20px;
+            text-align: center;
+            min-width: 320px;
+        }
+
+        .status-bar {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #0ff;
+            text-shadow: 0 0 6px #0ff;
+            margin-bottom: 10px;
+        }
+
+        .scores {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            padding-top: 10px;
+            border-top: 1px solid rgba(0,255,255,0.2);
+        }
+
+        .score-box {
+            text-align: center;
+        }
+
+        .score-val {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #0ff;
+            text-shadow: 0 0 8px #0ff;
+        }
+
+        .board-container {
+            position: relative;
+            width: calc(var(--grid-size) * 9 + var(--board-padding) * 2);
+            height: calc(var(--grid-size) * 9 + var(--board-padding) * 2);
+            padding: var(--board-padding);
+            box-sizing: border-box;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0,255,255,0.3);
+        }
+
+        .grid-lines {
+            position: absolute;
+            top: var(--board-padding);
+            left: var(--board-padding);
+            width: calc(var(--grid-size) * 8);
+            height: calc(var(--grid-size) * 8);
+            background-image: linear-gradient(rgba(0,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,255,0.3) 1px, transparent 1px);
+            background-size: var(--grid-size) var(--grid-size);
+        }
+
+        .star-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #0ff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 6px #0ff;
+        }
+
+        .intersection-layer {
+            position: absolute;
+            top: var(--board-padding);
+            left: var(--board-padding);
+            width: calc(var(--grid-size) * 8);
+            height: calc(var(--grid-size) * 8);
+        }
+
+        .intersection {
+            position: absolute;
+            width: var(--grid-size);
+            height: var(--grid-size);
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+            .intersection:hover::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: var(--stone-size);
+                height: var(--stone-size);
+                transform: translate(-50%, -50%);
+                background-color: rgba(0,255,255,0.2);
+                border-radius: 50%;
+            }
+
+        .stone {
+            position: absolute;
+            width: var(--stone-size);
+            height: var(--stone-size);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(0,255,255,0.6), inset 0 0 6px rgba(0,255,255,0.3);
+            z-index: 20;
+            pointer-events: none;
+            transition: all 0.2s;
+        }
+
+            .stone.black {
+                background: radial-gradient(circle at 30% 30%, #0ff 40%, #000 100%);
+            }
+
+            .stone.white {
+                background: radial-gradient(circle at 30% 30%, #fff 40%, #0ff 100%);
+            }
+
+            .stone.last-move::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                border: 2px solid #ff0;
+                box-shadow: 0 0 12px #ff0;
+            }
+
+            .stone.atari {
+                box-shadow: 0 0 15px 5px rgba(255,0,0,0.7);
+                animation: pulse 1s infinite;
+            }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 10px 2px rgba(255,0,0,0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 18px 6px rgba(255,0,0,0.9);
+            }
+
+            100% {
+                box-shadow: 0 0 10px 2px rgba(255,0,0,0.5);
+            }
+        }
+
+        .territory-mark {
+            position: absolute;
+            width: var(--grid-size);
+            height: var(--grid-size);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            pointer-events: none;
+            transition: all 0.5s ease;
+            border-radius: 4px;
+        }
+
+        .territory-black {
+            background-color: rgba(0,255,255,0.2);
+        }
+
+        .territory-white {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .board-container.finished .territory-black {
+            background-color: rgba(0,255,255,0.7) !important;
+            box-shadow: inset 0 0 8px rgba(255,255,255,0.2);
+        }
+
+        .board-container.finished .territory-white {
+            background-color: rgba(255,255,255,0.7) !important;
+            box-shadow: inset 0 0 8px rgba(0,255,255,0.2);
+        }
+
+        .controls {
+            margin-top: 25px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: 2px solid #0ff;
+            background: linear-gradient(45deg, rgba(0,255,255,0.2), rgba(0,255,255,0.1));
+            color: #0ff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-shadow: 0 0 6px #0ff;
+        }
+
+            button:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 0 15px #0ff;
+            }
+
+            button:disabled {
+                background: rgba(0,255,255,0.05);
+                border-color: rgba(0,255,255,0.2);
+                color: rgba(0,255,255,0.4);
+                cursor: not-allowed;
+                text-shadow: none;
+            }
+    </style>
+</head>
+<body>
+    <h1>1132941 - FinalTerm</h1>
+    <div class="game-info">
+        <div class="status-bar" id="status">⚫ 黑棋下子</div>
+        <div class="scores">
+            <div class="score-box">
+                <div>黑棋地盤</div>
+                <div class="score-val" id="score-black">0</div>
+            </div>
+            <div class="score-box">
+                <div>白棋地盤</div>
+                <div class="score-val" id="score-white">0</div>
+            </div>
+        </div>
+        <div id="pass-msg" style="color: #ffcccc; font-size: 0.9em; height: 20px; margin-top: 5px;"></div>
+    </div>
+    <div class="board-container" id="board-container">
+        <div class="grid-lines">
+            <div class="star-point" style="left: calc(var(--grid-size) * 2); top: calc(var(--grid-size) * 2);"></div>
+            <div class="star-point" style="left: calc(var(--grid-size) * 6); top: calc(var(--grid-size) * 2);"></div>
+            <div class="star-point" style="left: calc(var(--grid-size) * 4); top: calc(var(--grid-size) * 4);"></div>
+            <div class="star-point" style="left: calc(var(--grid-size) * 2); top: calc(var(--grid-size) * 6);"></div>
+            <div class="star-point" style="left: calc(var(--grid-size) * 6); top: calc(var(--grid-size) * 6);"></div>
+        </div>
+        <div class="intersection-layer" id="board-layer"></div>
+    </div>
+    <div class="controls">
+        <button id="btn-ai-toggle">AI 開啟</button>
+        <button id="btn-undo">悔棋</button>
+        <button id="btn-pass">Pass</button>
+        <button id="btn-reset">重新開始</button>
+    </div>
+
+    <script>
+        const BOARD_SIZE = 9, EMPTY = 0, BLACK = 1, WHITE = 2;
+
+        class GoGame {
+            constructor() {
+                this.aiEnabled = true;
+                this.history = [];
+                this.initBoardData();
+                this.renderBoardGrid();
+                this.updateUI();
+                this.bindControls();
+            }
+            initBoardData() {
+                this.board = Array.from({ length: BOARD_SIZE }, () => Array(BOARD_SIZE).fill(EMPTY));
+                this.currentPlayer = BLACK; this.gameOver = false; this.passes = 0;
+                this.koPoint = null; this.lastMove = null;
+            }
+            bindControls() {
+                document.getElementById('btn-ai-toggle').onclick = () => { this.aiEnabled = !this.aiEnabled; this.updateAIButton(); };
+                document.getElementById('btn-undo').onclick = () => { this.undo(); };
+                document.getElementById('btn-pass').onclick = () => { this.pass(); };
+                document.getElementById('btn-reset').onclick = () => { this.reset(); };
+                this.updateAIButton();
+            }
+            updateAIButton() { document.getElementById('btn-ai-toggle').textContent = this.aiEnabled ? "AI 開啟" : "AI 關閉"; }
+            renderBoardGrid() {
+                const layer = document.getElementById('board-layer'); layer.innerHTML = '';
+                for (let r = 0; r < BOARD_SIZE; r++) {
+                    for (let c = 0; c < BOARD_SIZE; c++) {
+                        const div = document.createElement('div'); div.className = 'intersection';
+                        div.style.top = `${r * 40}px`; div.style.left = `${c * 40}px`;
+                        div.onclick = () => { if (!this.gameOver && this.currentPlayer === BLACK) this.handleUserClick(r, c); }
+                        layer.appendChild(div);
+                        const mark = document.createElement('div'); mark.className = 'territory-mark';
+                        mark.id = `territory-${r}-${c}`; mark.style.top = `${r * 40}px`; mark.style.left = `${c * 40}px`;
+                        layer.appendChild(mark);
+                    }
+                }
+            }
+            handleUserClick(r, c) { if (this.playMove(r, c)) { if (this.currentPlayer === WHITE) this.aiMove(); } }
+            playMove(r, c) {
+                if (this.board[r][c] !== EMPTY || this.gameOver) return false;
+                const orig = this.copyBoard(this.board); this.board[r][c] = this.currentPlayer;
+                const opponent = this.currentPlayer === BLACK ? WHITE : BLACK;
+                const captured = this.checkCaptures(r, c, opponent);
+                const myLib = this.getGroupLiberties(r, c, this.currentPlayer);
+                if (this.koPoint && this.koPoint.r === r && this.koPoint.c === c && captured.length === 1) { this.board = orig; alert("不能立即回提"); return false; }
+                if (myLib === 0 && captured.length === 0) { this.board = orig; alert("不能自殺"); return false; }
+                if (captured.length > 0) this.removeStones(captured);
+                this.koPoint = (captured.length === 1 && myLib === 0) ? { r: captured[0].r, c: captured[0].c } : null;
+                this.passes = 0; this.lastMove = { r, c };
+                this.history.push({ board: orig, currentPlayer: this.currentPlayer, lastMove: this.lastMove, koPoint: this.koPoint, passes: this.passes });
+                this.renderStones(); this.updateRealTimeTerritory();
+                if (this.checkVictory()) { return true; }
+                this.currentPlayer = opponent; this.updateUI(); return true;
+            }
+            undo() { if (this.history.length === 0 || this.gameOver) return; const last = this.history.pop(); this.board = this.copyBoard(last.board); this.currentPlayer = last.currentPlayer; this.lastMove = last.lastMove; this.koPoint = last.koPoint; this.passes = last.passes; this.renderStones(); this.updateRealTimeTerritory(); this.updateUI(); }
+            pass() { if (this.gameOver) return; this.passes++; document.getElementById('pass-msg').textContent = `${this.currentPlayer === BLACK ? '黑棋' : '白棋'} Pass`; if (this.passes >= 2) { this.endGame(); return; } this.currentPlayer = this.currentPlayer === BLACK ? WHITE : BLACK; this.updateUI(); if (this.currentPlayer === WHITE) this.aiMove(); }
+            reset() { document.getElementById('board-container').classList.remove('finished'); this.initBoardData(); this.renderBoardGrid(); this.updateRealTimeTerritory(); document.getElementById('pass-msg').textContent = ''; this.updateUI(); }
+            aiMove() { if (!this.aiEnabled || this.gameOver) return; const valid = []; for (let r = 0; r < BOARD_SIZE; r++) { for (let c = 0; c < BOARD_SIZE; c++) { if (this.board[r][c] === EMPTY) { let score = Math.random() * 10; if ((r === 2 || r === 6) && (c === 2 || c === 6)) score += 5; if (r === 4 && c === 4) score += 3; if (this.isValidMoveSim(r, c, WHITE)) valid.push({ r, c, score }); } } } if (valid.length === 0) { this.pass(); return; } valid.sort((a, b) => b.score - a.score); this.playMove(valid[0].r, valid[0].c); }
+            isValidMoveSim(r, c, player) { const opponent = player === BLACK ? WHITE : BLACK; this.board[r][c] = player; const caps = this.checkCaptures(r, c, opponent); const libs = this.getGroupLiberties(r, c, player); this.board[r][c] = EMPTY; return !(libs === 0 && caps.length === 0); }
+            checkCaptures(r, c, opponent, board = this.board) { const captured = [];[[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]].forEach(([nr, nc]) => { if (this.isOnBoard(nr, nc) && board[nr][nc] === opponent) { const g = this.getGroup(nr, nc, opponent, board); if (this.countLiberties(g, board) === 0) captured.push(...g); } }); return captured; }
+            getGroup(r, c, color, board = this.board) { const group = []; const visited = new Set(); const queue = [{ r, c }]; visited.add(`${r},${c}`); while (queue.length > 0) { const curr = queue.pop(); group.push(curr);[[curr.r - 1, curr.c], [curr.r + 1, curr.c], [curr.r, curr.c - 1], [curr.r, curr.c + 1]].forEach(([nr, nc]) => { if (this.isOnBoard(nr, nc) && board[nr][nc] === color && !visited.has(`${nr},${nc}`)) { visited.add(`${nr},${nc}`); queue.push({ r: nr, c: nc }); } }); } return group; }
+            countLiberties(group, board = this.board) { const libs = new Set(); group.forEach(({ r, c }) => [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]].forEach(([nr, nc]) => { if (this.isOnBoard(nr, nc) && board[nr][nc] === EMPTY) libs.add(`${nr},${nc}`); })); return libs.size; }
+            getGroupLiberties(r, c, color) { return this.countLiberties(this.getGroup(r, c, color)); }
+            getRegion(r, c, visited) { const points = []; const queue = [{ r, c }]; visited.add(`${r},${c}`); let touchesBlack = false, touchesWhite = false; while (queue.length > 0) { const curr = queue.pop(); points.push(curr);[[curr.r - 1, curr.c], [curr.r + 1, curr.c], [curr.r, curr.c - 1], [curr.r, c.curr + 1]].forEach(([nr, nc]) => { if (this.isOnBoard(nr, nc)) { if (this.board[nr][nc] === BLACK) touchesBlack = true; else if (this.board[nr][nc] === WHITE) touchesWhite = true; else if (!visited.has(`${nr},${nc}`)) { visited.add(`${nr},${nc}`); queue.push({ r: nr, c: nc }); } } }); } let owner = null; if (touchesBlack && !touchesWhite) owner = BLACK; if (!touchesBlack && touchesWhite) owner = WHITE; return { points, owner }; }
+            removeStones(stones) { stones.forEach(({ r, c }) => { this.board[r][c] = EMPTY; }); this.renderStones(); }
+            renderStones() { document.querySelectorAll('.stone').forEach(el => el.remove()); const layer = document.getElementById('board-layer'); for (let r = 0; r < BOARD_SIZE; r++) { for (let c = 0; c < BOARD_SIZE; c++) { if (this.board[r][c] !== EMPTY) { const stone = document.createElement('div'); stone.className = `stone ${this.board[r][c] === BLACK ? 'black' : 'white'}`; stone.id = `stone-${r}-${c}`; stone.style.top = `${r * 40}px`; stone.style.left = `${c * 40}px`; if (this.lastMove && this.lastMove.r === r && this.lastMove.c === c) stone.classList.add('last-move'); if (this.getGroupLiberties(r, c, this.board[r][c]) === 1) stone.classList.add('atari'); layer.appendChild(stone); } } } }
+            updateRealTimeTerritory() { document.querySelectorAll('.territory-mark').forEach(el => el.className = 'territory-mark'); let blackArea = 0, whiteArea = 0; const visited = new Set(); for (let r = 0; r < BOARD_SIZE; r++) { for (let c = 0; c < BOARD_SIZE; c++) { if (this.board[r][c] === EMPTY && !visited.has(`${r},${c}`)) { const region = this.getRegion(r, c, visited); if (region.owner === BLACK) { blackArea += region.points.length; region.points.forEach(p => this.markTerritory(p.r, p.c, 'black')); } else if (region.owner === WHITE) { whiteArea += region.points.length; region.points.forEach(p => this.markTerritory(p.r, p.c, 'white')); } } } } for (let r = 0; r < BOARD_SIZE; r++) { for (let c = 0; c < BOARD_SIZE; c++) { if (this.board[r][c] === BLACK) { blackArea++; this.markTerritory(r, c, 'black'); } else if (this.board[r][c] === WHITE) { whiteArea++; this.markTerritory(r, c, 'white'); } } } document.getElementById('score-black').textContent = blackArea; document.getElementById('score-white').textContent = (whiteArea + 3.5).toFixed(1); return { black: blackArea, white: whiteArea + 3.5 }; }
+            markTerritory(r, c, color) { const el = document.getElementById(`territory-${r}-${c}`); if (el) el.classList.add(`territory-${color}`); }
+            updateUI() { if (this.gameOver) return; document.getElementById('status').textContent = this.currentPlayer === BLACK ? "⚫ 黑棋下子" : "⚪ 電腦思考中..."; }
+            checkVictory() { return false; }
+            endGame() { this.gameOver = true; document.getElementById('board-container').classList.add('finished'); const finalScore = this.updateRealTimeTerritory(); setTimeout(() => { let text = `雙方 Pass，遊戲結束！\n⚫ 黑棋總地: ${finalScore.black}\n⚪ 白棋總地: ${finalScore.white}\n`; if (finalScore.black > finalScore.white) { text += "🏆 黑棋勝！"; document.getElementById('status').textContent = "🏆 黑棋獲勝"; document.getElementById('status').style.color = "#2ecc71"; } else { text += "💻 白棋勝！"; document.getElementById('status').textContent = "💻 白棋獲勝"; } alert(text); }, 100); }
+            isOnBoard(r, c) { return r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE; }
+            copyBoard(b) { return b.map(row => [...row]); }
+        }
+        let game; window.onload = () => { game = new GoGame(); };
+    </script>
+</body>
+</html>
